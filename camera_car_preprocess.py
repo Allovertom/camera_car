@@ -5,17 +5,28 @@ import numpy as np
 import os
 import glob
 from sklearn import svm, metrics
+from sklearn.model_selection import train_test_split
 
 
 def main():
-    arr = Preprocess()
-    #print(arr, len(arr))
-#    clf = svm.SVC()
-#    clf.fit(data_train, label_train)
-#    pre = clf.predict(data_test)
-#    
-#    ac_score = metrics.accuracy_score(label_test, pre)
-#    print(ac_score)
+    Path = '/home/pi/ドキュメント/camera_car/Train/'
+    Left_L = glob.glob(Path + 'Left/*.jpg')
+    Right_L = glob.glob(Path + 'Right/*.jpg')
+    Center_L = glob.glob(Path + 'Center/*.jpg')
+    X_L = Preprocess(Left_L)
+    Y_L = np.ones(int(len(X_L)/784))
+    X_R = Preprocess(Right_L)
+    Y_R = np.full(int(len(X_R)/784),2)
+    X_C = Preprocess(Center_L)
+    Y_C = np.zeros(int(len(X_C)/784))
+
+    
+    #for gan in [0.001, 0.01, 0.1, 1, 10, 100, 1000, 10000]:
+        #clf = svm.SVC(C=x)
+        #clf.fit(data_train, label_train)
+        #pre = clf.predict(data_test)    
+        #ac_score = metrics.accuracy_score(label_test, pre)
+        #print(ac_score)
 
 
 def Take_pics():
@@ -28,9 +39,8 @@ def Take_pics():
         camera.capture('/home/pi/画像/image%s.jpg' % i)
     camera.stop_preview()
 
-def Preprocess():
+def Preprocess(files):
     size = [28,28]
-    files = glob.glob('/home/pi/ドキュメント/camera_car/Train/*.jpg')
     array = np.empty([size[0]*size[1],0],int)
     print(array.shape)
     print(files)
