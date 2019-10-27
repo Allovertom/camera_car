@@ -19,12 +19,17 @@ def main():
     Y_R = np.full(int(len(X_R)/784),2)
     X_C = Preprocess(Center_L)
     Y_C = np.zeros(int(len(X_C)/784))
-
     
+    X = np.r_[X_L, X_R, X_C]
+    X = X.reshape([784,int(len(X)/784)])
+    Y = np.r_[Y_L, Y_R, Y_C]
+    print(X.shape)
+    print(Y.shape)
+
     #for gan in [0.001, 0.01, 0.1, 1, 10, 100, 1000, 10000]:
-        #clf = svm.SVC(C=x)
-        #clf.fit(data_train, label_train)
-        #pre = clf.predict(data_test)    
+     #   clf = svm.SVC(C=gan)
+      #  clf.fit(data_train, label_train)
+       # pre = clf.predict(data_test)    
         #ac_score = metrics.accuracy_score(label_test, pre)
         #print(ac_score)
 
