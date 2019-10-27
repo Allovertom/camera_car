@@ -1,4 +1,4 @@
-from picamera import PiCamera
+#from picamera import PiCamera
 from time import sleep
 from PIL import Image
 import numpy as np
@@ -6,10 +6,12 @@ import os
 import glob
 from sklearn import svm, metrics
 from sklearn.model_selection import train_test_split
+import pickle
 
 
 def main():
-    Path = '/home/pi/ドキュメント/camera_car/Train/'
+    #Path = '/home/pi/ドキュメント/camera_car/Train/'
+    Path = 'Train/'
     Left_L = glob.glob(Path + 'Left/*.jpg')
     Right_L = glob.glob(Path + 'Right/*.jpg')
     Center_L = glob.glob(Path + 'Center/*.jpg')
@@ -21,17 +23,21 @@ def main():
     Y_C = np.zeros(int(len(X_C)/784))
     
     X = np.r_[X_L, X_R, X_C]
-    X = X.reshape([784,int(len(X)/784)])
-    Y = np.r_[Y_L, Y_R, Y_C]
+    X = X.reshape([int(len(X)/784),784])
+    y = np.r_[Y_L, Y_R, Y_C]
     print(X.shape)
-    print(Y.shape)
+    print(y.shape)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.15, random_state=42)
 
-    #for gan in [0.001, 0.01, 0.1, 1, 10, 100, 1000, 10000]:
-     #   clf = svm.SVC(C=gan)
-      #  clf.fit(data_train, label_train)
-       # pre = clf.predict(data_test)    
-        #ac_score = metrics.accuracy_score(label_test, pre)
-        #print(ac_score)
+    clf = svm.SVC(kernel='linear')
+    clf.fit(X_train, y_train)
+    pre = clf.predict(X_test)    
+    ac_score = metrics.accuracy_score(y_test, pre)
+    print(ac_score)
+	
+    	
+    with open('model.pickle', mode='wb') as fp:
+        pickle.dump(clf, fp)
 
 
 def Take_pics():
@@ -53,7 +59,8 @@ def Preprocess(files):
         img = Image.open(file).convert('L')
         img = img.resize(size, Image.ANTIALIAS)
         print(img.format, img.size, img.mode,img.getextrema())
-        img.save('/home/pi/ドキュメント/camera_car/Prep/'+str(i)+'_out.jpg')
+        #img.save('/home/pi/ドキュメント/camera_car/Prep/'+str(i)+'_out.jpg')
+        img.save('Prep/'+str(i)+'_out.jpg')
         img_arr = np.asarray(img)
         print("OD"+str(img_arr.ravel().shape))
         array = np.append(array,img_arr.ravel())
