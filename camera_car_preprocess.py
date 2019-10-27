@@ -32,21 +32,18 @@ def Preprocess():
     size = [28,28]
     files = glob.glob('/home/pi/ドキュメント/camera_car/Train/*.jpg')
     array = np.empty([size[0]*size[1],0],int)
-    #array = []
-    #array = np.array(array)
     print(array.shape)
-    for file in files:
+    print(files)
+    for i, file in enumerate(files):
         img = Image.open(file).convert('L')
         img = img.resize(size, Image.ANTIALIAS)
         print(img.format, img.size, img.mode,img.getextrema())
-        #image_P.save('/home/pi/画像/image_L0.jpg')
+        img.save('/home/pi/ドキュメント/camera_car/Prep/'+str(i)+'_out.jpg')
         img_arr = np.asarray(img)
         print("OD"+str(img_arr.ravel().shape))
-        array =np.hstack((array,img_arr.ravel()))
-        #array = np.append(array,img_arr.ravel(),axis=1)
-        #array = np.concatenate([array,img_arr.ravel()],axis=0)
+        array = np.append(array,img_arr.ravel())
         print(array.shape)
-    return array.T
+    return array
 
 if __name__ == '__main__':
     main()
