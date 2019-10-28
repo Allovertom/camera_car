@@ -98,14 +98,16 @@ p3.start(0)
 #adc_pin0 = 0
 i = 0
 duty = 70
-sleep(5)
+#まずは前進
+p0.ChangeDutyCycle(duty)
+p1.ChangeDutyCycle(0)
+p2.ChangeDutyCycle(duty)
+p3.ChangeDutyCycle(0)
+sleep(3)
 try:
     while True:
 #        inputVal0 = readadc(adc_pin0, SPICLK, SPIMOSI, SPIMISO, SPICS)
-        p0.ChangeDutyCycle(duty)
-        p1.ChangeDutyCycle(0)
-        p2.ChangeDutyCycle(0)
-        p3.ChangeDutyCycle(duty)
+
         #写真取って指定フォルダに保存
         i += 1
         camera.capture('/home/pi/ドキュメント/camera_car/Predict/%s.jpg' % i)
@@ -118,8 +120,8 @@ try:
             print("Forward")
             p0.ChangeDutyCycle(duty)
             p1.ChangeDutyCycle(0)
-            p2.ChangeDutyCycle(0)
-            p3.ChangeDutyCycle(duty)
+            p2.ChangeDutyCycle(duty)
+            p3.ChangeDutyCycle(0)
         elif pred[0] == 1:#左折
             print("Left")
             p0.ChangeDutyCycle(duty)
@@ -130,13 +132,13 @@ try:
             print("Right")
             p0.ChangeDutyCycle(0)
             p1.ChangeDutyCycle(0)
-            p2.ChangeDutyCycle(0)
-            p3.ChangeDutyCycle(duty)
+            p2.ChangeDutyCycle(duty)
+            p3.ChangeDutyCycle(0)
         #前処理後写真を保存
         img.save('/home/pi/ドキュメント/camera_car/Train/'+str(i)+'_'+str(int(pred[0]))+'.jpg')
 
             
-        sleep(3)
+        sleep(5)
 
 except KeyboardInterrupt:
     pass
