@@ -94,7 +94,7 @@ p0.start(0)
 p1.start(0)
 p2.start(0)
 p3.start(0)
-
+sleep(5)
 #adc_pin0 = 0
 i = 0
 duty = 70
@@ -103,7 +103,7 @@ p0.ChangeDutyCycle(duty)
 p1.ChangeDutyCycle(0)
 p2.ChangeDutyCycle(duty)
 p3.ChangeDutyCycle(0)
-sleep(3)
+#sleep(3)
 try:
     while True:
 #        inputVal0 = readadc(adc_pin0, SPICLK, SPIMOSI, SPIMISO, SPICS)
@@ -138,7 +138,7 @@ try:
         img.save('/home/pi/ドキュメント/camera_car/Train/'+str(i)+'_'+str(int(pred[0]))+'.jpg')
 
             
-        sleep(5)
+        sleep(1)
 
 except KeyboardInterrupt:
     pass

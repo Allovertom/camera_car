@@ -10,11 +10,11 @@ import pickle
 
 
 def main():
-    #Path = '/home/pi/ドキュメント/camera_car/Train/'
-    Path = 'Train/'
-    Left_L = glob.glob(Path + 'Left/*.jpg')
-    Right_L = glob.glob(Path + 'Right/*.jpg')
-    Center_L = glob.glob(Path + 'Center/*.jpg')
+    Path = '/home/pi/ドキュメント/camera_car/Train/'
+    #Path = 'Train/'
+    Left_L = glob.glob(Path + '1_Left/*.jpg')
+    Right_L = glob.glob(Path + '2_Right/*.jpg')
+    Center_L = glob.glob(Path + '0_Center/*.jpg')
     X_L = Preprocess(Left_L)
     Y_L = np.ones(int(len(X_L)/784))
     X_R = Preprocess(Right_L)
@@ -34,9 +34,9 @@ def main():
     pre = clf.predict(X_test)    
     ac_score = metrics.accuracy_score(y_test, pre)
     print(ac_score)
-	
-    	
-    with open('model.pickle', mode='wb') as fp:
+    
+        
+    with open('model_2.pickle', mode='wb') as fp:
         pickle.dump(clf, fp)
 
 
@@ -60,7 +60,7 @@ def Preprocess(files):
         img = img.resize(size, Image.ANTIALIAS)
         print(img.format, img.size, img.mode,img.getextrema())
         #img.save('/home/pi/ドキュメント/camera_car/Prep/'+str(i)+'_out.jpg')
-        img.save('Prep/'+str(i)+'_out.jpg')
+        #img.save('Prep/'+str(i)+'_out.jpg')
         img_arr = np.asarray(img)
         print("OD"+str(img_arr.ravel().shape))
         array = np.append(array,img_arr.ravel())
