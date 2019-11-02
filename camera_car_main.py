@@ -11,6 +11,10 @@ from sklearn import svm, metrics
 from sklearn.model_selection import train_test_split
 import pickle
 import shutil
+import random
+
+PickleName = "model_20191101_3.pickle"
+honban = 0
 
 
 # MCP3208からSPI通信で12ビットのデジタル値を取得。0から7の8チャンネル使用可
@@ -44,7 +48,7 @@ def readadc(adcnum, clockpin, mosipin, misopin, cspin):
     GPIO.output(cspin, GPIO.HIGH)
     return adcout
     
-def Preprocess(i):
+def Preprocess(i,honban):
     size = [28,28]
     array = np.empty([size[0]*size[1],0],int)
     print(array.shape)
@@ -57,8 +61,10 @@ def Preprocess(i):
     #一次元化
     img_arr = np.asarray(img)
     print("OD"+str(img_arr.ravel().shape))
-    #os.remove(FullPath[0])
-    shutil.move(FullPath[0],'/home/pi/ドキュメント/camera_car/Predict/done/%s.jpg' % i)
+    if honban:
+        os.remove(FullPath[0])#本番用
+    else:
+        shutil.move(FullPath[0],'/home/pi/ドキュメント/camera_car/Predict/done/%s.jpg' % i)
     return img_arr.ravel(), img
 
 GPIO.setmode(GPIO.BCM)
@@ -73,7 +79,7 @@ GPIO.setmode(GPIO.BCM)
 #GPIO.setup(SPIMISO, GPIO.IN)
 #GPIO.setup(SPICS, GPIO.OUT)
 
-with open('model.pickle', mode='rb') as fp:
+with open(PickleName, mode='rb') as fp:
     clf = pickle.load(fp)
 
 camera = PiCamera()
@@ -94,14 +100,15 @@ p0.start(0)
 p1.start(0)
 p2.start(0)
 p3.start(0)
-sleep(5)
+print("start moving...")
+sleep(10)
 #adc_pin0 = 0
 i = 0
 duty = 70
 #まずは前進
-p0.ChangeDutyCycle(duty)
+p0.ChangeDutyCycle(20)
 p1.ChangeDutyCycle(0)
-p2.ChangeDutyCycle(duty)
+p2.ChangeDutyCycle(20)
 p3.ChangeDutyCycle(0)
 #sleep(3)
 try:
@@ -112,7 +119,7 @@ try:
         i += 1
         camera.capture('/home/pi/ドキュメント/camera_car/Predict/%s.jpg' % i)
         #指定フォルダの写真を前処理
-        X_pred, img = Preprocess(i)
+        X_pred, img = Preprocess(i,honban)
         #推定
         pred = clf.predict(X_pred)
         #デューティー比変更
@@ -122,23 +129,37 @@ try:
             p1.ChangeDutyCycle(0)
             p2.ChangeDutyCycle(duty)
             p3.ChangeDutyCycle(0)
+            sleep(0.8)
         elif pred[0] == 1:#左折
             print("Left")
-            p0.ChangeDutyCycle(duty)
+            p0.ChangeDutyCycle(duty-20)
             p1.ChangeDutyCycle(0)
             p2.ChangeDutyCycle(0)
-            p3.ChangeDutyCycle(0)
+            p3.ChangeDutyCycle(20)
+            sleep(0.3)
         elif pred[0] == 2:#右折
             print("Right")
             p0.ChangeDutyCycle(0)
-            p1.ChangeDutyCycle(0)
-            p2.ChangeDutyCycle(duty)
+            p1.ChangeDutyCycle(20)
+            p2.ChangeDutyCycle(duty-20)
             p3.ChangeDutyCycle(0)
+            sleep(0.3)
+        elif pred[0]  == 3:#後退
+            p0.ChangeDutyCycle(0)
+            p1.ChangeDutyCycle(duty-40)
+            p2.ChangeDutyCycle(0)
+            p3.ChangeDutyCycle(duty-10)
+            print("Backing...")
+            sleep(1)
+            print("finish backing")
         #前処理後写真を保存
-        img.save('/home/pi/ドキュメント/camera_car/Train/'+str(i)+'_'+str(int(pred[0]))+'.jpg')
-
-            
-        sleep(1)
+        if honban:
+            pass
+        else:
+            rand = random.randint(0,100000)
+            img.save('/home/pi/ドキュメント/camera_car/Train/'
+                     +str(i)+'_'+str(int(pred[0]))+
+                     '_'+str(rand)+'.jpg')
 
 except KeyboardInterrupt:
     pass
