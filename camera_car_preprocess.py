@@ -8,7 +8,7 @@ from sklearn import svm, metrics
 from sklearn.model_selection import train_test_split
 import pickle
 
-ModelName = "model_20191101_3.pickle"
+ModelName = "model_20191102_9.pickle"
 
 def main():
     Path = '/home/pi/ドキュメント/camera_car/Train/'
@@ -31,7 +31,7 @@ def main():
     y = np.r_[Y_L, Y_R, Y_C, Y_B]
     print(X.shape)
     print(y.shape)
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.15, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_state=42)
 
     clf = svm.SVC(kernel='linear')
     clf.fit(X_train, y_train)

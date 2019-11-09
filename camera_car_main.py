@@ -13,7 +13,7 @@ import pickle
 import shutil
 import random
 
-PickleName = "model_20191101_3.pickle"
+PickleName = "model_20191102_9.pickle"
 honban = 0
 
 
@@ -146,9 +146,9 @@ try:
             sleep(0.3)
         elif pred[0]  == 3:#後退
             p0.ChangeDutyCycle(0)
-            p1.ChangeDutyCycle(duty-40)
+            p1.ChangeDutyCycle(duty-10)
             p2.ChangeDutyCycle(0)
-            p3.ChangeDutyCycle(duty-10)
+            p3.ChangeDutyCycle(duty-40)
             print("Backing...")
             sleep(1)
             print("finish backing")
